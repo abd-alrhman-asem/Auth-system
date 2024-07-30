@@ -4,28 +4,31 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Services\Auth\AuthService;
-use App\Services\Auth\AuthServiceInterface;
-use Illuminate\Auth\AuthenticationException;
+use App\Services\Auth\LoginService\AuthServiceInterface;
+
 use Illuminate\Http\JsonResponse;
 
 class LoginController extends Controller
 {
+    protected AuthServiceInterface $authService ;
+
+    /**
+     * @param AuthServiceInterface $authService
+     */
+    public function __construct(AuthServiceInterface $authService)
+    {
+        $this->authService = $authService;
+    }
+
     /**
      * @param LoginRequest $request
-     * @param AuthService $userService
      * @return JsonResponse
-     * @throws AuthenticationException
      */
-    public function __invoke(
-        LoginRequest $request ,
-        AuthServiceInterface $userService
-    ): JsonResponse
+    public function __invoke( LoginRequest $request): JsonResponse
     {
-       $user =  $userService->authenticate((array)$request);
-       return loggedInSuccessfully(
-           $user->getRememberToken() ,
-           'user logged in successfully'
-       );
+        return loggedInSuccessfully(
+            $this->authService->authenticate((array)$request),
+            'user logged in successfully'
+        );
     }
 }

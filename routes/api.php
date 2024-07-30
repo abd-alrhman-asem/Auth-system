@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //})->middleware('auth:sanctum');
 
-Route::prefix('Auth')->group(function () {
+Route::prefix('auth')->group(function () {
 // Auth Routes
     include __DIR__ . "/Auth/AuthRoute.php";
 });

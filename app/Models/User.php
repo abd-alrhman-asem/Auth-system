@@ -20,6 +20,12 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'user_name',
+        'profile_photo',
+        'certificate',
+        'phone_number',
+        'verification_code',
+        'verification_code_expires_at'
     ];
 
     /**
@@ -32,16 +38,8 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'verification_code_expires_at' => 'datetime'
+    ];
 }

@@ -30,6 +30,16 @@ return [
 
     'disks' => [
 
+        'certificates' => [
+            'driver' => 'local',
+            'root' => storage_path('app/certificates'),
+        ],
+
+        'profile_photos' => [
+            'driver' => 'local',
+            'root' => storage_path('app/profile_photos'),
+        ],
+
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app'),
