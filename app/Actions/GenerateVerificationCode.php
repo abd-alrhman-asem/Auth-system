@@ -20,6 +20,7 @@ class GenerateVerificationCode implements GenerateVerificationCodeInterface
         $code = $uppercase . $lowercase . $numbers . $remaining;
 
         // Shuffle the characters to avoid predictable patterns
-        return Str::shuffle($code);
+        return str_shuffle($code);
+//        return Str::shuffle($code);
     }
 }

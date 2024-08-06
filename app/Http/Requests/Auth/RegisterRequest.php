@@ -22,7 +22,6 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|regex:/^[\pL\s]+$/u',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => [
                 'required',
@@ -34,9 +33,9 @@ class RegisterRequest extends FormRequest
                 'regex:/[0-9]/',
                 'regex:/[@$!%*?&#]/',
             ],
-            'user_name' => 'required|string|max:255|unique:users|alpha_dash',
-            'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'certificate' => 'nullable|file|mimes:pdf|max:5120',
+            'user_name' => 'required|string|max:255|alpha_dash',
+            'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048|unique:users',
+            'certificate' => 'nullable|file|mimes:pdf|max:5120|unique:users',
             'phone_number' => 'required|string|max:20|unique:users|regex:/^[0-9]+$/',
         ];
     }

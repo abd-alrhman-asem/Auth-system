@@ -20,7 +20,8 @@
     },
     "autoload": {
         "files":[
-            "app/Helpers/ApiRespnseHelper.php"
+            "app/Helpers/ApiRespnseHelper.php",
+            "app/Helpers/CostumErorrResponse.php"
         ],
         "psr-4": {
             "App\\": "app/",

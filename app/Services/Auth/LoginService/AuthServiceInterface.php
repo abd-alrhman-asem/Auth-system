@@ -2,9 +2,11 @@
 
 namespace App\Services\Auth\LoginService;
 
+use App\Http\Requests\Auth\LoginRequest;
+
 interface AuthServiceInterface
 {
-    public function authenticate(array $data);
+    public function authenticate(LoginRequest $request);
 
 
 }

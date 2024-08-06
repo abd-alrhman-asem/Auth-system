@@ -8,13 +8,13 @@ use App\Http\Controllers\Auth\VerificationCodeController;
 use Illuminate\Support\Facades\Route;
 
 
-Route::post('/login', LoginController::class);
+Route::post('/login', LoginController::class)->name('login');
 Route::post('/register', RegisterController::class);
-Route::post('/verificationCode', VerificationCodeController::class);
+Route::post('/verify-code', VerificationCodeController::class);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('logout', LogoutController::class);
-    Route::post('refresh-token', TokenController::class);
+    Route::get('refresh-token', [TokenController::class , 'RestToken']);
 
 });
 

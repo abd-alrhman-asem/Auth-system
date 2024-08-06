@@ -5,7 +5,6 @@ namespace App\Listeners;
 use App\Actions\GenerateVerificationCodeInterface;
 use App\Events\UserRegisteredEvent;
 use App\Mail\VerificationCodeToUserEmail;
-use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 

@@ -14,9 +14,9 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 class VerificationCodeController extends Controller
 {
     protected  verificationCodeInterface $verificationCodeService;
-    public function __construct( verificationCodeInterface $verificationCode)
+    public function __construct( verificationCodeInterface $verificationCodeService)
     {
-        $this->verificationCodeService = $verificationCode ;
+        $this->verificationCodeService = $verificationCodeService ;
     }
 
     public function __invoke(VerificationCodeRequest $request):JsonResponse

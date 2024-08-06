@@ -2,24 +2,56 @@
 
 namespace App\Services\Auth\verificationCode;
 
+use App\Exceptions\InvalidVerificationCodeException;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
 
 class VerificationCodeService implements  verificationCodeInterface
 {
 
-    public function handleCode($request)
+    /**
+     * @param $request
+     * @return mixed
+     * @throws InvalidVerificationCodeException
+     */
+    public function handleCode($request): mixed
     {
-        $keyForCachedCode  = 'verificationCode_'. $request->email ;
+        $user = User::where('email', $request->email)->firstOrFail();
+        if ( $user->email_verified_at)
+            throw new AccessDeniedException('your account is already verified , try to login ');
+        $this->validateVerificationCode($request);
+        Cache::forget($this->getCacheKey($request->email)); // Remove the code from the cache
+        $user->email_verified_at = now();
+        $user->save();
+        return $user->createToken(
+            'verification-token' ,
+            expiresAt: now()->addMinutes(config('sanctum.expiration'))
+        )->plainTextToken;
+    }
+
+    /**
+     * @param Request $request
+     * @throws InvalidVerificationCodeException
+     */
+    private function validateVerificationCode(Request $request): void
+    {
+        $keyForCachedCode = $this->getCacheKey($request->email);
         $cachedCode = Cache::get($keyForCachedCode);
-        if (!$cachedCode || $cachedCode != $request->verification_code ) {
-            throw  new BadRequestException('Verification code has expired or is invalid.');
+        if (!$cachedCode || $cachedCode !== $request->verification_code) {
+            throw new InvalidVerificationCodeException('Verification code has expired or  invalid.');
         }
-        if ($cachedCode == $request->verification_code) {
-            // Code is correct
-            Cache::forget($keyForCachedCode); // Remove the code from the cache
-            $user = User::where('email', $request->email)->first();
-            return $user->createToken('verification-token')->plainTextToken;
-        }    }
+    }
+
+    /**
+     * @param string $email
+     * @return string
+     */
+    private function getCacheKey(string $email): string
+    {
+        return 'verificationCode_' . $email;
+    }
+
+
 }

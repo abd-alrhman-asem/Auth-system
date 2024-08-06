@@ -5,92 +5,70 @@ namespace App\Services\Auth\RegisterService;
 use App\Events\UserRegisteredEvent;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
+use App\Traits\FileManager;
+use Exception;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class RegisterService implements RegisterServiceInterface
 {
+    use FileManager;
     /**
      * Register a new user.
      *
      * @param RegisterRequest $request
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     public function register(RegisterRequest $request): void
     {
         if (!$user = $this->createUser($request))
-            throw  new \Exception('the register is not working , pleas try again ');
+            throw  new Exception('the register operation is not working , pleas try again ');
         event(new UserRegisteredEvent($user));
     }
 
     /**
      * @param RegisterRequest $request
      * @return User
+     * @throws Exception
      */
-    /*private function createUser(RegisterRequest $request): User
+    public function createUser(RegisterRequest $request): User
     {
         // Prepare the data for user creation
-        $data = $request->validated();
-
-        // Hash the password securely
-        $data['password'] = Hash::make($data['password']);
-
-//        $ss = $request->file('profile_photo');
-//        $ss->store('profile_photo');
-//        dd($ss);
-        //        dd($data['profile_photo']);
-        // Handle profile photo
-        if ($request->hasFile('profile_photo')) {
-            $file = $request->file('profile_photo');
-            if ($file->isValid()) {
-//            $data['profile_photo'] = $request->file('profile_photo')->store('profile_photos');
-                $data['profile_photo'] = $file->store('profile_photos');
-            }
-            // Handle certificate file
-            if ($request->hasFile('certificate')) {
-                dd('☻☻there is here error ');
-                $data['certificate'] = $request->file('certificate')->store('certificates');
-            }
-
-            // Create the user with the prepared data
-        }
-            return User::create($data);
-
-
-    }*/
-    private function createUser(RegisterRequest $request): User
-    {
-        // Prepare the data for user creation
-        $data = $request->validated();
-
-        // Hash the password securely
-        $data['password'] = Hash::make($data['password']);
-
-        // Handle profile photo
-        if ($request->hasFile('profile_photo')) {
-            $file = $request->file('profile_photo');
-            if ($file->isValid()) {
-                $data['profile_photo'] = $file->store('profile_photos');
-            } else {
-                // Handle invalid file
-                // You can log the error or return a specific response
-                throw new \Exception();
-            }
-        }
-
-        // Handle certificate file
-        if ($request->hasFile('certificate')) {
-            $certificateFile = $request->file('certificate');
-            if ($certificateFile->isValid()) {
-                $data['certificate'] = $certificateFile->store('certificates');
-            } else {
-                // Handle invalid file
-                return back()->withErrors(['certificate' => 'The uploaded certificate is invalid.']);
-            }
-        }
+        $data = $this->prepareUserData($request);
 
         // Create the user with the prepared data
         return User::create($data);
     }
+
+    /**
+     * @param RegisterRequest $request
+     * @return array
+     */
+    private function prepareUserData(RegisterRequest $request): array
+    {
+        $data = $request->validated();
+        $data['password'] = Hash::make($data['password']);
+        $data['profile_photo'] = $this->handleFileUpload($request, 'profile_photo', 'profile_photos');
+        $data['certificate'] = $this->handleFileUpload($request, 'certificate', 'certificates');
+        return $data;
+    }
+
+    /**
+     * @param RegisterRequest $request
+     * @param string $fileKey
+     * @param string $disk
+     * @return string|null
+     */
+    private function handleFileUpload(RegisterRequest $request, string $fileKey, string $disk): ?string
+    {
+        if ($request->hasFile($fileKey) && $request->file($fileKey)->isValid()) {
+            return $this->storeFile($request->file($fileKey) , $disk);
+        }
+        return null;
+    }
+
+
 
 }
