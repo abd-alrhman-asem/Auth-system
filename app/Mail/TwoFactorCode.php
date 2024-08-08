@@ -3,21 +3,23 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class VerificationCodeToUserEmail extends Mailable
+class TwoFactorCode extends Mailable
 {
     use Queueable, SerializesModels;
+    public $code;
 
     /**
      * Create a new message instance.
      */
-    public function __construct( public string $verificationCode)
+    public function __construct($code)
     {
-        //
+        $this->code = $code;
     }
 
     /**
@@ -26,7 +28,7 @@ class VerificationCodeToUserEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Verification Code Email',
+            subject: 'Two Factor Code',
         );
     }
 
@@ -37,7 +39,7 @@ class VerificationCodeToUserEmail extends Mailable
     {
         return new Content(
             view: 'Emails.verificationCodeEmail',
-            with: ['code'=> $this->verificationCode],
+            with: ['code'=> $this->code],
         );
     }
 

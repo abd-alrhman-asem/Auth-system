@@ -25,7 +25,7 @@ class RegisterService implements RegisterServiceInterface
     {
         if (!$user = $this->createUser($request))
             throw  new Exception('the register operation is not working , pleas try again ');
-        event(new UserRegisteredEvent($user));
+        event(new UserRegisteredEvent($user , $request->ip()));
     }
 
     /**

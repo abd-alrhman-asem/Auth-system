@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\ResendVerificationCode;
 use App\Http\Requests\Auth\VerificationCodeRequest;
 use App\Models\User;
 use App\Services\Auth\verificationCode\verificationCodeInterface;
@@ -13,20 +14,25 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class VerificationCodeController extends Controller
 {
-    protected  verificationCodeInterface $verificationCodeService;
-    public function __construct( verificationCodeInterface $verificationCodeService)
+    protected verificationCodeInterface $verificationCodeService;
+
+    public function __construct(verificationCodeInterface $verificationCodeService)
     {
-        $this->verificationCodeService = $verificationCodeService ;
+        $this->verificationCodeService = $verificationCodeService;
     }
 
-    public function __invoke(VerificationCodeRequest $request):JsonResponse
+    public function checkVerificationCode(VerificationCodeRequest $request): JsonResponse
     {
-        return loggedInSuccessfully(
-            $this->verificationCodeService->handleCode($request) ,
-            "your account is verified now  enjoy in our app ",
-            now()->addMinutes(10)
+        $this->verificationCodeService->handleCode($request);
+        return successOperationResponse('your account is verified now  enjoy in our app  ');
+
+    }
+
+    public function reSendVerificationCode(ResendVerificationCode $request): JsonResponse
+    {
+        $this->verificationCodeService->resendverificationCode($request);
+        return successOperationResponse(
+            " we send the verification code ,please check your email "
         );
-
-
     }
 }

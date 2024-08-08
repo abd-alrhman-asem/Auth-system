@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Actions\GenerateVerificationCode;
 use App\Actions\GenerateVerificationCodeInterface;
 use App\Events\UserRegisteredEvent;
+use App\Events\userVerifiedEvent;
+use App\Listeners\SendTwoFactorCodeListener;
 use App\Listeners\SendVerificationCodeViaEmailListener;
 use App\Services\Auth\LoginService\AuthService;
 use App\Services\Auth\LoginService\AuthServiceInterface;
@@ -12,6 +14,8 @@ use App\Services\Auth\RegisterService\RegisterService;
 use App\Services\Auth\RegisterService\RegisterServiceInterface;
 use App\Services\Auth\TokenManeger\TokensService;
 use App\Services\Auth\TokenManeger\TokensServiceInterface;
+use App\Services\Auth\TwoFA\TwoFAAuthService;
+use App\Services\Auth\TwoFA\TwoFactorAuthInterface;
 use App\Services\Auth\verificationCode\verificationCodeInterface;
 use App\Services\Auth\verificationCode\VerificationCodeService;
 use Illuminate\Support\Facades\Event;
@@ -29,8 +33,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(GenerateVerificationCodeInterface::class, GenerateVerificationCode::class);
         $this->app->bind(verificationCodeInterface::class, VerificationCodeService::class);
         $this->app->bind(TokensServiceInterface::class, TokensService::class);
-
-
+        $this->app->bind(TwoFactorAuthInterface::class, TwoFAAuthService::class);
     }
 
     /**
@@ -41,6 +44,10 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(
             UserRegisteredEvent::class,
             SendVerificationCodeViaEmailListener::class,
+        );
+        Event::listen(
+            userVerifiedEvent::class,
+            SendTwoFactorCodeListener::class,
         );
     }
 }

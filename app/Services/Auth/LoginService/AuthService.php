@@ -15,11 +15,11 @@ class AuthService implements AuthServiceInterface
 
 
     /**
-     * @param array $data
-     * @return mixed
-     * @throws AuthenticationException|ModelNotFoundException|UnauthorizedException
+     * @param LoginRequest $request
+     * @return void
+     * @throws AuthenticationException
      */
-    public function authenticate(LoginRequest $request): mixed
+    public function authenticate(LoginRequest $request): void
     {
         $data = $request->validated();
         $loginType = $this->getLoginType($data);
@@ -29,11 +29,9 @@ class AuthService implements AuthServiceInterface
         if (!Hash::check($data['password'], $user->password)) {
             throw new AuthenticationException('Invalid password , please try again.');
         }
-        if (!$this->ifVUserVerified($user)) {
+        if (!$this->ifVUserVerified($user , $request)) {
             throw new UnauthorizedException('you account is not verified , we send code to your email please check your email ');
         }
-        // Generate new personal access token
-        return $user->createToken('login-token')->plainTextToken;
     }
 
 
@@ -50,10 +48,10 @@ class AuthService implements AuthServiceInterface
      * @param User $user
      * @return bool
      */
-    function ifVUserVerified(User $user): bool
+    function ifVUserVerified(User $user , $request): bool
     {
         if (!$user->email_verified_at) {
-            event(new UserRegisteredEvent($user));
+            event(new UserRegisteredEvent($user , $request->ip()));
             return false;
         }
         return true;

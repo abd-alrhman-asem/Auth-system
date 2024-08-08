@@ -10,7 +10,7 @@ use Illuminate\Http\JsonResponse;
 
 class LoginController extends Controller
 {
-    protected AuthServiceInterface $authService ;
+    protected AuthServiceInterface $authService;
 
     /**
      * @param AuthServiceInterface $authService
@@ -24,11 +24,10 @@ class LoginController extends Controller
      * @param LoginRequest $request
      * @return JsonResponse
      */
-    public function __invoke( LoginRequest $request): JsonResponse
+    public function __invoke(LoginRequest $request): JsonResponse
     {
-        return loggedInSuccessfully(
-            $this->authService->authenticate($request),
-            'user logged in successfully'
-        );
+        $this->authService->authenticate($request);
+        return successOperationResponse('user logged in successfully');
+
     }
 }

@@ -67,7 +67,7 @@
     <div class="email-body">
         <p>Hello,</p>
         <p>Thank you for registering with us. Please use the following verification code to verify your email address:</p>
-        <span class="verification-code">{{ $verificationCode }}</span>
+        <span class="verification-code">{{ $code }}</span>
         <p>This code is valid for the next 10 minutes. If you did not request this code, please ignore this email.</p>
         <p>Best regards,<br> ARTER Company </p>
     </div>
