@@ -9,18 +9,18 @@ use App\Http\Requests\Auth\Resend2FACodeRequest;
 use App\Http\Requests\Auth\TwoFARequest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Symfony\Component\Finder\Exception\AccessDeniedException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class TwoFAAuthService implements TwoFactorAuthInterface
+class TwoFAService implements TwoFAInterface
 {
     /**
      * @throws InvalidVerificationCodeException
      */
     public function confirm2FACode(TwoFARequest $request): string
     {
-        if (!$user = User::where('email', $request->email)->firstOrFail())
+        if (!$user = User::where('email', $request->email)->first())
             throw  new ModelNotFoundException('this email has no user , try to register first');
         if ($user->email_verified_at)
             $this->validate2FACode($request);
@@ -31,9 +31,10 @@ class TwoFAAuthService implements TwoFactorAuthInterface
 
     }
 
-    public function resend2FACode(Resend2FACodeRequest $request)
+    public function resend2FACode(Resend2FACodeRequest $request): void
     {
-        if (!$user = User::where('email', $request->email)->firstOrFail())
+
+        if (!$user = User::where('email', $request->email)->first())
             throw  new ModelNotFoundException('this email has no user , try to register first');
         if (!$user->email_verified_at) {
             event(new UserRegisteredEvent($user, $request->ip()));
@@ -45,11 +46,11 @@ class TwoFAAuthService implements TwoFactorAuthInterface
     /**
      * @throws InvalidVerificationCodeException
      */
-    private function validate2FACode(Request $request): void
+    private function validate2FACode( $request): void
     {
-        $cachedCode = Cache::get($request->ip());
-        if (!$cachedCode || $cachedCode[1] !== $request->TwofactorAuth) {
-            throw new InvalidVerificationCodeException('Verification code has expired or  invalid.');
+        $cachedCode = Cache::get($request->ip()."2FA");
+        if (!$cachedCode || $cachedCode['TwoFactorAuthCode'] !== $request->TwoFactorAuth) {
+            throw new BadRequestHttpException('2FA code has expired or  invalid.');
         }
     }
 

@@ -3,12 +3,14 @@
 namespace App\Services\Auth\LoginService;
 
 use App\Events\UserRegisteredEvent;
+use App\Events\userVerifiedEvent;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\UnauthorizedException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class AuthService implements AuthServiceInterface
 {
@@ -27,11 +29,12 @@ class AuthService implements AuthServiceInterface
             throw new ModelNotFoundException('there is no user for this identifier ');
         }
         if (!Hash::check($data['password'], $user->password)) {
-            throw new AuthenticationException('Invalid password , please try again.');
+            throw new BadRequestHttpException('Invalid password , please try again.');
         }
         if (!$this->ifVUserVerified($user , $request)) {
-            throw new UnauthorizedException('you account is not verified , we send code to your email please check your email ');
+            throw new UnauthorizedException('you account is not verified , we send code to your email please check it ');
         }
+        event(new userVerifiedEvent($user, $request->ip()));
     }
 
 

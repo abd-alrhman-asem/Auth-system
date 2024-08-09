@@ -36,7 +36,10 @@ class SendTwoFactorCodeListener
         // Save the verification code and email to the cache as user ip is the key
         Cache::put(
             $event->userIp."2FA",
-            [ $user->email, $twoFACode ] ,
+            [
+                "userEmail"=>$user->email,
+                "TwoFactorAuthCode"=>$twoFACode
+            ] ,
             now()->addMinutes(10)
         );
         // Send the verification email

@@ -11,7 +11,7 @@ class Resend2FACodeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**

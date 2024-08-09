@@ -20,7 +20,7 @@ use Illuminate\Validation\UnauthorizedException;
 }
 function handleValidationException(ValidationException $e): JsonResponse
 {
-    return unprocessableResponse("validation error : " . $e->getMessage());
+    return unprocessableResponse($e->validator->errors()->all()  );
 }
  function handleConflictHttpException(ConflictHttpException $e): JsonResponse
 {

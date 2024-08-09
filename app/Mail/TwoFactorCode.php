@@ -39,7 +39,7 @@ class TwoFactorCode extends Mailable
     {
         return new Content(
             view: 'Emails.verificationCodeEmail',
-            with: ['code'=> $this->code],
+            with: ['code'=> $this->code ,"typeName"=>'2FA Code '],
         );
     }
 

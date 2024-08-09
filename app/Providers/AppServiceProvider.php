@@ -14,8 +14,8 @@ use App\Services\Auth\RegisterService\RegisterService;
 use App\Services\Auth\RegisterService\RegisterServiceInterface;
 use App\Services\Auth\TokenManeger\TokensService;
 use App\Services\Auth\TokenManeger\TokensServiceInterface;
-use App\Services\Auth\TwoFA\TwoFAAuthService;
-use App\Services\Auth\TwoFA\TwoFactorAuthInterface;
+use App\Services\Auth\TwoFA\TwoFAService;
+use App\Services\Auth\TwoFA\TwoFAInterface;
 use App\Services\Auth\verificationCode\verificationCodeInterface;
 use App\Services\Auth\verificationCode\VerificationCodeService;
 use Illuminate\Support\Facades\Event;
@@ -28,12 +28,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(AuthServiceInterface::class, AuthService::class);
-        $this->app->bind(RegisterServiceInterface::class, RegisterService::class);
+        $this->app->singleton(AuthServiceInterface::class, AuthService::class );
+        $this->app->bind(RegisterServiceInterface::class, RegisterService::class );
         $this->app->bind(GenerateVerificationCodeInterface::class, GenerateVerificationCode::class);
         $this->app->bind(verificationCodeInterface::class, VerificationCodeService::class);
         $this->app->bind(TokensServiceInterface::class, TokensService::class);
-        $this->app->bind(TwoFactorAuthInterface::class, TwoFAAuthService::class);
+        $this->app->bind(TwoFAInterface::class, TwoFAService::class);
     }
 
     /**

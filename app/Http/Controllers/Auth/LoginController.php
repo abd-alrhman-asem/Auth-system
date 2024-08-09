@@ -27,7 +27,7 @@ class LoginController extends Controller
     public function __invoke(LoginRequest $request): JsonResponse
     {
         $this->authService->authenticate($request);
-        return successOperationResponse('user logged in successfully');
+        return successOperationResponse('user logged in successfully , we send 2FA code to your email please check it ');
 
     }
 }

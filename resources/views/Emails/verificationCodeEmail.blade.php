@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Verification</title>
+    <title>{{$typeName}}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -62,7 +62,7 @@
 <body>
 <div class="email-container">
     <div class="email-header">
-        <h1>Email Verification</h1>
+        <h1>{{$typeName}}</h1>
     </div>
     <div class="email-body">
         <p>Hello,</p>

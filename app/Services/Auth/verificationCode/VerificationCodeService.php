@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Symfony\Component\Finder\Exception\AccessDeniedException;
 use \App\Http\Requests\Auth\ResendVerificationCode;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class VerificationCodeService implements verificationCodeInterface
 {
@@ -20,7 +21,7 @@ class VerificationCodeService implements verificationCodeInterface
      */
     public function handleCode($request): void
     {
-        if (!$user = User::where('email', $request->email)->firstOrFail())
+        if (!$user = User::where('email', $request->email)->first())
             throw  new ModelNotFoundException('this email has no user , try to register first');
         if ($user->email_verified_at)
             throw new AccessDeniedException('your account is already verified , try to login ');
@@ -28,7 +29,6 @@ class VerificationCodeService implements verificationCodeInterface
         Cache::forget($request->ip()); // Remove the code from the cache
         $user->email_verified_at = now();
         $user->save();
-
     }
 
     /**
@@ -37,7 +37,7 @@ class VerificationCodeService implements verificationCodeInterface
      */
     public function resendVerificationCode(ResendVerificationCode $request): void
     {
-        if (!$user = User::where('email', $request->email)->firstOrFail())
+        if (!$user = User::where('email', $request->email)->first())
             throw new ModelNotFoundException('this email has no user , try to register first');
         if ($user->email_verified_at)
             throw new AccessDeniedException('your account is already verified , try to login ');
@@ -52,8 +52,8 @@ class VerificationCodeService implements verificationCodeInterface
     private function validateVerificationCode(Request $request): void
     {
         $cachedCode = Cache::get($request->ip());
-        if (!$cachedCode || $cachedCode[1]  !== $request->verification_code) {
-            throw new InvalidVerificationCodeException('Verification code has expired or  invalid.');
+        if (!$cachedCode || $cachedCode['verificationCode']  !== $request->verification_code) {
+            throw new BadRequestHttpException('Verification code has expired or  invalid.');
         }
     }
 

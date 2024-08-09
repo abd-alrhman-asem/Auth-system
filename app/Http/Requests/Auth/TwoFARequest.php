@@ -23,7 +23,7 @@ class TwoFARequest extends FormRequest
     {
         return [
             'email' => 'required|string|email|max:255',
-            'TwofactorAuth' => " required|string|size:6"
+            'TwoFactorAuth' => " required|string|size:6"
 
         ];
     }

@@ -5,16 +5,16 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\Resend2FACodeRequest;
 use App\Http\Requests\Auth\TwoFARequest;
-use App\Services\Auth\TwoFA\TwoFactorAuthInterface;
+use App\Services\Auth\TwoFA\TwoFAInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 
 class TwoFactorController extends Controller
 {
-    public TwoFactorAuthInterface $twoFactorAuthService;
+    public TwoFAInterface $twoFactorAuthService;
 
-    public function __construct(TwoFactorAuthInterface $twoFactorAuthService)
+    public function __construct(TwoFAInterface $twoFactorAuthService)
     {
         $this->twoFactorAuthService = $twoFactorAuthService;
     }

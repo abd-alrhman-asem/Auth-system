@@ -32,7 +32,10 @@ class SendVerificationCodeViaEmailListener
         // Save the verification code and email to the cache as user ip is the key
         Cache::put(
             $event->userIp,
-            [ $user->email, $VerificationCode ] ,
+            [
+                "userEmail"=>$user->email,
+                "verificationCode" => $VerificationCode
+            ] ,
             now()->addMinutes(10)
         );
         // Send the verification email
